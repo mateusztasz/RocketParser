@@ -65,19 +65,16 @@ class RocketParser:
         elif field is 'month':
             aggregationField = launch_date.group(2)
 
-        if filter is None or \
-                        self.success is filter:
+        if filter is None or self.success is filter:
             try:
                 self.solution[aggregationField] = (self.solution[aggregationField] + 1)
             except LookupError:
                 self.solution[aggregationField] = 1
 
 
-
-
 if __name__ == '__main__':
     parser = RocketParser()
-    result_dict = parser.group_by(open("../launchlog.txt"), 'month', filter=None)
+    result_dict = parser.group_by(open("../launchlog.txt"), 'month', filter=False)
+
     print("JSON format: ", result_dict[0])
     print("Python dictionary format: ", result_dict[1])
-
