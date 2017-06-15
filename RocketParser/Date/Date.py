@@ -1,4 +1,7 @@
-from Regex.Regex import Regex
+try:
+    from RocketParser.Regex.Regex import Regex
+except ImportError:
+    from Regex.Regex import Regex
 
 
 class Date:
@@ -23,13 +26,10 @@ class Date:
         return self.regexPattern
 
     @staticmethod
-    def isDateFormat(date, pattern):
+    def isDateFormat(date, pattern: str) -> bool:
         return Regex(date).match(pattern)
 
-    def build(self):
+    def build(self) -> list:
         extracted_date = Regex(self.getFullDate())
         extracted_date.match(self.getRegexPattern())
         return extracted_date
-
-
-

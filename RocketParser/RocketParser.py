@@ -1,7 +1,10 @@
 from Date.Date import Date
-from typing import List, Dict
 import collections
+from typing import List, Dict
 import json
+import os
+
+from ProgressBar.ProgressBar import ProgressBar
 
 
 class RocketParser:
@@ -9,14 +12,24 @@ class RocketParser:
         self.date = Date()
         self.success = None
         self.solution = dict()
+        self.progressBar = ProgressBar()
 
-    def group_by(self, stream, field, filter=None):
+    def group_by(self, stream, field, filter=None) -> [json, Dict[str, int]]:
         self.omitLines(stream, lines=2)
 
-        for line in stream:
+        self.progressBar.setTotal(os.fstat(stream.fileno()).st_size)
+
+        for line in iter(stream.readline, ''):
+
+            # Update progress bar
+            self.progressBar.setIteration(stream.tell())
+            self.progressBar.print()
+
+            # Divide line into list
             cell_in_line = line.split('   ')
             cell_in_line = [elem.strip() for elem in cell_in_line if elem]
 
+            # Prepare and aggregate counter
             if self.isCellLineFormatCorrect(cell_in_line):
                 self.date.setFullDate(cell_in_line[1])
                 self.setSuccess(cell_in_line[-2])
@@ -26,19 +39,18 @@ class RocketParser:
 
                 self.aggregateCount(launch_date, field, filter)
 
-        res = collections.OrderedDict(sorted(self.solution.items()))
-        return json.dumps(res, indent=4, sort_keys=True)
+        stream.close()
 
-    def omitLines(self, stream, lines):
+        res = collections.OrderedDict(sorted(self.solution.items()))
+        return [json.dumps(res, indent=4, sort_keys=True), res]
+
+    def omitLines(self, stream, lines: int) -> None:
         for __ in range(0, lines):
             stream.readline()
 
     @staticmethod
     def isCellLineFormatCorrect(data: List[str]) -> bool:
-        if Date.isDateFormat(data[1], pattern=Date.defaultDateRegexPattern):
-            return True
-        else:
-            return False
+        return Date.isDateFormat(data[1], pattern=Date.defaultDateRegexPattern)
 
     def setSuccess(self, successLiteral: str) -> bool:
         if successLiteral is 'S':
@@ -46,7 +58,7 @@ class RocketParser:
         elif successLiteral is 'F':
             self.success = False
 
-    def aggregateCount(self, launch_date: list, field: str, filter: bool):
+    def aggregateCount(self, launch_date: List[str], field: str, filter: bool):
 
         if field is 'year':
             aggregationField = launch_date.group(1)
@@ -61,7 +73,11 @@ class RocketParser:
                 self.solution[aggregationField] = 1
 
 
+
+
 if __name__ == '__main__':
     parser = RocketParser()
     result_dict = parser.group_by(open("../launchlog.txt"), 'month', filter=None)
-    print(result_dict)
+    print("JSON format: ", result_dict[0])
+    print("Python dictionary format: ", result_dict[1])
+
