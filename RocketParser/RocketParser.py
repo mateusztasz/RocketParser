@@ -1,10 +1,14 @@
-from Date.Date import Date
+try:
+    from RocketParser.Date.Date import Date
+    from RocketParser.ProgressBar.ProgressBar import ProgressBar
+except ImportError:
+    from Date.Date import Date
+    from ProgressBar.ProgressBar import ProgressBar
+
 import collections
 from typing import List, Dict
 import json
 import os
-
-from ProgressBar.ProgressBar import ProgressBar
 
 
 class RocketParser:
@@ -74,7 +78,7 @@ class RocketParser:
 
 if __name__ == '__main__':
     parser = RocketParser()
-    result_dict = parser.group_by(open("../launchlog.txt"), 'month', filter=False)
+    result_dict = parser.group_by(open("../launchlog.txt"), 'year', filter=None)
 
     print("JSON format: ", result_dict[0])
     print("Python dictionary format: ", result_dict[1])
