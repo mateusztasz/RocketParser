@@ -4,7 +4,7 @@
 Aplikacja dostarcza parser danych dla zbioru zawierającego  orbitalne uruchomienia satelit.
 
 ## Typ danych wejściowych
-Zbiór danych do parsowania w formie pliku `.txt` jest dostępny pod tym [linkiem](http://planet4589.rg/space/log/launchlog.txt).
+Zbiór danych do parsowania w formie pliku `.txt` jest dostępny pod tym [linkiem](http://planet4589.org/space/log/launchlog.txt).
 Dodatkowy opis tabel z pliku można znaleźć pod następującym [linkiem](http://planet4589.org/space/log/launch.html).
 
 ## API
